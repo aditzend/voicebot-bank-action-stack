@@ -1,0 +1,60 @@
+# prueba  de botfront-stack
+#
+version: "3.8"
+
+networks:
+  private:
+  common:
+    external: true
+    name: ${COMMON_NET-common_public}
+  ingress:
+    external: true
+    name: ${INGRESS_NET-traefik_net}
+    
+ 
+volumes:
+  rasa_actions_data:
+  filebrowser_data:
+
+secrets:
+  email_url:
+    external: true
+  email_api_key:
+    external: true
+
+services:
+  actions:
+    image: alexanderditzend/voicebot-bank-functions:1.0.0
+    networks:
+      - common
+    volumes:
+      - rasa_actions_data:/app/actions
+    secrets:
+      - email_url
+      - email_api_key
+    command:
+      - start
+      - --debug
+      - --actions
+      - --port ${ACTIONS_PORT-5005}
+      - actions
+    environment:
+      - CMS_URL=${CMS_URL}
+      - CMS_PORT=${CMS_PORT}
+      
+  filebrowser:
+    image: hurlenko/filebrowser
+    labels:
+      com.docker.stack.service.path: ""
+      traefik.enable: "true"
+    environment:
+      FB_BASEURL: "/{{ index .Service.Labels `com.docker.stack.namespace`}}/"
+    volumes:
+      - rasa_actions_data:/data/{{index .Service.Labels "com.docker.stack.namespace"}}_rasa_actions
+      - filebrowser_data:/config
+    networks:
+      - ingress
+      
+
+
+
