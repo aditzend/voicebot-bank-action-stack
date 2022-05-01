@@ -4,6 +4,8 @@ version: "3.8"
 
 networks:
   private:
+    external: true
+    name: ${PRIVATE_NET-voicebot_private}
   common:
     external: true
     name: ${COMMON_NET-common_public}
@@ -27,6 +29,7 @@ services:
     image: alexanderditzend/voicebot-bank-functions:1.0.0
     networks:
       - common
+      - private
     volumes:
       - rasa_actions_data:/app/actions
     secrets:
