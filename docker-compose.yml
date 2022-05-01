@@ -39,8 +39,8 @@ services:
       - start
       - --debug
       - --actions
-      - --port ${ACTIONS_PORT-5005}
       - actions
+      - --port ${ACTIONS_PORT-5005}
     environment:
       - CMS_URL=${CMS_URL}
       - CMS_PORT=${CMS_PORT}
